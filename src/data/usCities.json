@@ -1,0 +1,52 @@
+[
+  {
+    "name": "New York, NY",
+    "lat": 40.7128,
+    "lon": -74.0060
+  },
+  {
+    "name": "Los Angeles, CA",
+    "lat": 34.0522,
+    "lon": -118.2437
+  },
+  {
+    "name": "Chicago, IL",
+    "lat": 41.8781,
+    "lon": -87.6298
+  },
+  {
+    "name": "Houston, TX",
+    "lat": 29.7604,
+    "lon": -95.3698
+  },
+  {
+    "name": "Phoenix, AZ",
+    "lat": 33.4484,
+    "lon": -112.0740
+  },
+  {
+    "name": "Philadelphia, PA",
+    "lat": 39.9526,
+    "lon": -75.1652
+  },
+  {
+    "name": "San Antonio, TX",
+    "lat": 29.4241,
+    "lon": -98.4936
+  },
+  {
+    "name": "San Diego, CA",
+    "lat": 32.7157,
+    "lon": -117.1611
+  },
+  {
+    "name": "Dallas, TX",
+    "lat": 32.7767,
+    "lon": -96.7970
+  },
+  {
+    "name": "San Jose, CA",
+    "lat": 37.3382,
+    "lon": -121.8863
+  }
+] 
