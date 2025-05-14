@@ -1,62 +1,7 @@
-'use client';
-
-import { useState, useRef } from 'react';
-import dynamic from 'next/dynamic';
-import CityPopupCard from '@/components/CityPopupCard';
-import { fetchRentEstimate } from '@/lib/fetchRentEstimate';
 import Link from 'next/link';
 import CursorHalo from './rent-map/CursorHalo';
 
-// Dynamically import the map component to avoid SSR issues with Mapbox
-const USMap = dynamic(() => import('@/components/USMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-screen flex items-center justify-center">
-      <div className="text-xl">Loading map...</div>
-    </div>
-  ),
-});
-
 export default function Home() {
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [rentData, setRentData] = useState<{
-    rent: number | null;
-    lastUpdated: string | null;
-  }>({ rent: null, lastUpdated: null });
-  const [isLoading, setIsLoading] = useState(false);
-  const rentCache = useRef<{ [city: string]: { rent: number | null; lastUpdated: string | null } }>({});
-
-  const handleCityClick = async (city: string) => {
-    setSelectedCity(city);
-
-    // Check cache first
-    if (rentCache.current[city]) {
-      setRentData(rentCache.current[city]);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const result = await fetchRentEstimate(city);
-      const data = {
-        rent: result?.medianRent || null,
-        lastUpdated: result?.lastUpdated || null,
-      };
-      setRentData(data);
-      rentCache.current[city] = data; // Store in cache
-    } catch (error) {
-      console.error('Error fetching rent data:', error);
-      setRentData({ rent: null, lastUpdated: null });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCloseCard = () => {
-    setSelectedCity(null);
-    setRentData({ rent: null, lastUpdated: null });
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-emerald-200 via-lime-100 to-green-50 font-sans relative">
       <CursorHalo color="green" />

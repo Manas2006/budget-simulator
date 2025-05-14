@@ -6,7 +6,6 @@ import CityPopupCard from '@/components/CityPopupCard';
 import { fetchRentEstimate } from '@/lib/fetchRentEstimate';
 import Link from 'next/link';
 import CursorHalo from './CursorHalo';
-import { motion } from 'framer-motion';
 
 const USMap = dynamic(() => import('@/components/USMap'), {
   ssr: false,
@@ -41,7 +40,7 @@ export default function RentMapPage() {
       };
       setRentData(data);
       rentCache.current[city] = data;
-    } catch (error) {
+    } catch {
       setRentData({ rent: null, lastUpdated: null });
     } finally {
       setIsLoading(false);
@@ -54,13 +53,7 @@ export default function RentMapPage() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 flex flex-col font-sans"
-    >
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 flex flex-col font-sans">
       <CursorHalo color="green" />
       <Link href="/" className="fixed top-6 left-6 z-50 bg-white/90 text-emerald-700 hover:bg-emerald-50 border border-emerald-400 rounded-full px-5 py-2 shadow-md text-lg font-medium transition-all hover:scale-105 cursor-pointer">
         ← Home
@@ -81,6 +74,6 @@ export default function RentMapPage() {
           </div>
         )}
       </main>
-    </motion.div>
+    </div>
   );
 } 
