@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const dummyAddress = `1093 County Route 60, ${city}`;
+    const dummyAddress = `${city}`;
     const options = {
       method: 'GET',
       url: 'https://zillow-com1.p.rapidapi.com/rentEstimate',
