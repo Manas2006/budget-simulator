@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const dummyAddress = ` ${city}`;
+    const dummyAddress = `1093 County Route 60, ${city}`;
     const options = {
       method: 'GET',
       url: 'https://zillow-com1.p.rapidapi.com/rentEstimate',
@@ -34,8 +34,12 @@ export async function GET(req: NextRequest) {
     const response = await axios.request(options);
     console.log('Zillow API response:', response.data);
     return new Response(JSON.stringify(response.data), { status: 200 });
-  } catch (error: any) {
-    console.error('Zillow API error:', error?.response?.data || error.message || error);
-    return new Response(JSON.stringify({ error: error.message, details: error?.response?.data }), { status: 500 });
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'message' in error) {
+      console.error('Zillow API error:', (error as any).message);
+      return new Response(JSON.stringify({ error: (error as any).message }), { status: 500 });
+    }
+    console.error('Zillow API error:', error);
+    return new Response(JSON.stringify({ error: 'Unknown error' }), { status: 500 });
   }
 } 
