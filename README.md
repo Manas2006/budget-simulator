@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Budget Simulator
+
+A modern web application that helps users explore and compare rent costs across different US cities using an interactive map interface. Built with Next.js, React, and Mapbox GL.
+
+## Features
+
+- Interactive US map with city selection
+- Real-time rent estimates using Zillow API
+- Beautiful, responsive UI with smooth animations
+- City-specific rent information cards
+- Caching system for rent data to improve performance
+- Modern gradient-based design with smooth transitions
+
+## Tech Stack
+
+- **Frontend Framework**: Next.js 15.3.2
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS
+- **Maps**: Mapbox GL & react-map-gl
+- **Animations**: Framer Motion
+- **API Integration**: Axios
+- **Language**: TypeScript
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js (Latest LTS version recommended)
+- npm or yarn
+- A Mapbox access token
+- A RapidAPI Zillow API key
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/budget-simulator.git
+cd budget-simulator
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Create a `.env.local` file in the root directory and add your API keys:
+```
+NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
+RAPIDAPI_ZILLOW_KEY=your_zillow_api_key
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                 # Next.js app directory
+│   ├── api/            # API routes
+│   ├── rent-map/       # Rent map page
+│   └── layout.tsx      # Root layout
+├── components/         # React components
+│   ├── USMap.tsx      # Interactive US map
+│   └── CityPopupCard.tsx # City information card
+├── lib/               # Utility functions
+└── data/             # Static data
+```
 
-## Learn More
+## API Integration
 
-To learn more about Next.js, take a look at the following resources:
+The application uses the Zillow API through RapidAPI to fetch real-time rent estimates for different cities. The API endpoint is configured to handle city-specific queries and return median rent data.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Acknowledgments
+
+- Mapbox for the mapping functionality
+- Zillow for the rent data API
+- Next.js team for the amazing framework
