@@ -1,7 +1,24 @@
 import React from 'react';
 
-interface CityCostCardProps {
-  data: any;
+type CityCostOfLivingData = {
+  city: string;
+  country: string;
+  costOfLivingIndex: number;
+  rentIndex: number;
+  groceriesIndex: number;
+  restaurantIndex: number;
+  purchasingPower: number;
+  estMonthlyWithoutRent: string | number;
+  apt1City: string | number;
+  apt1Suburbs: string | number;
+  apt3City: string | number;
+  apt3Suburbs: string | number;
+  avgSalary: string | number;
+  internetCost: string | number;
+};
+
+type CityCostCardProps = {
+  data: CityCostOfLivingData;
   onClose: () => void;
 }
 

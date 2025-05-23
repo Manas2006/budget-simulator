@@ -1,6 +1,17 @@
 import { NextRequest } from 'next/server';
 import axios from 'axios';
 
+type CityCostOfLivingData = {
+  name: string;
+  country: string;
+  cost_of_living_index: number;
+  rent_index: number;
+  groceries_index: number;
+  restaurant_price_index: number;
+  local_purchasing_power_index: number;
+  cost_of_living_details: { currency: string; details: { Item: string; Value: string | number }[] }[];
+};
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const lat = searchParams.get('lat');
@@ -35,9 +46,9 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await axios.request(options);
-    const city = response.data.data[0];
-    const usdDetails = city.cost_of_living_details.find((d: any) => d.currency === 'USD')?.details || [];
-    const getItem = (label: string) => usdDetails.find((item: any) => item.Item === label)?.Value ?? 'N/A';
+    const city: CityCostOfLivingData = response.data.data[0];
+    const usdDetails = city.cost_of_living_details.find((d) => d.currency === 'USD')?.details || [];
+    const getItem = (label: string) => usdDetails.find((item) => item.Item === label)?.Value ?? 'N/A';
 
     const result = {
       city: city.name,

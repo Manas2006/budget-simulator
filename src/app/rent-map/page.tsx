@@ -8,6 +8,23 @@ import Link from 'next/link';
 import CursorHalo from './CursorHalo';
 import CityCostCard from '@/components/CityCostCard';
 
+type CityCostOfLivingData = {
+  city: string;
+  country: string;
+  costOfLivingIndex: number;
+  rentIndex: number;
+  groceriesIndex: number;
+  restaurantIndex: number;
+  purchasingPower: number;
+  estMonthlyWithoutRent: string | number;
+  apt1City: string | number;
+  apt1Suburbs: string | number;
+  apt3City: string | number;
+  apt3Suburbs: string | number;
+  avgSalary: string | number;
+  internetCost: string | number;
+};
+
 const USMap = dynamic(() => import('@/components/USMap'), {
   ssr: false,
   loading: () => (
@@ -19,9 +36,9 @@ const USMap = dynamic(() => import('@/components/USMap'), {
 
 export default function RentMapPage() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [cityData, setCityData] = useState<any>(null);
+  const [cityData, setCityData] = useState<CityCostOfLivingData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const rentCache = useRef<{ [key: string]: any }>({});
+  const rentCache = useRef<{ [key: string]: CityCostOfLivingData }>({});
 
   const handleCityClick = async (city: { name: string; lat: number; lon: number }) => {
     setSelectedCity(city.name);
