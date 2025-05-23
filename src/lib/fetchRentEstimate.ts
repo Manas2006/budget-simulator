@@ -1,11 +1,6 @@
-export async function fetchRentEstimate(city: string) {
-  const response = await fetch(`/api/rentEstimate?city=${encodeURIComponent(city)}`);
-  if (!response.ok) throw new Error('Failed to fetch rent estimate');
+export async function fetchCityCostOfLiving(lat: number, lon: number) {
+  const response = await fetch(`/api/rentEstimate?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`);
+  if (!response.ok) throw new Error('Failed to fetch cost of living data');
   const data = await response.json();
-  // Use the same extraction logic as before
-  const medianRent = data.medianRent || data.rent || data.price || data.median || 0;
-  return {
-    medianRent,
-    lastUpdated: new Date().toISOString(),
-  };
+  return data;
 } 

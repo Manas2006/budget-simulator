@@ -5,7 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import cities from '@/data/usCities.json';
 
 interface USMapProps {
-  onCityClick: (city: string) => void;
+  onCityClick: (city: { name: string; lat: number; lon: number }) => void;
   recenterButtonClass?: string;
 }
 
@@ -73,7 +73,7 @@ export default function USMap({ onCityClick, recenterButtonClass }: USMapProps) 
         setHoveredCoords(null);
       });
       el.addEventListener('click', () => {
-        onCityClick(city.name);
+        onCityClick(city);
       });
       new mapboxgl.Marker(el)
         .setLngLat([city.lon, city.lat])
@@ -151,7 +151,7 @@ export default function USMap({ onCityClick, recenterButtonClass }: USMapProps) 
           
           // Trigger the city click to show rent data
           console.log('Calling onCityClick with:', cityName);
-          onCityClick(cityName);
+          onCityClick({ name: cityName, lat, lon });
           
           // Clear the search input
           setSearchQuery('');
@@ -196,8 +196,8 @@ export default function USMap({ onCityClick, recenterButtonClass }: USMapProps) 
       });
       
       // Trigger the city click to show rent data
-      console.log('Calling onCityClick with:', city.name);
-      onCityClick(city.name);
+      console.log('Calling onCityClick with:', city);
+      onCityClick(city);
       
       // Clear the search input
       setSearchQuery('');

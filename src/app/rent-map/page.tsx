@@ -2,10 +2,11 @@
 
 import { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import CityPopupCard from '@/components/CityPopupCard';
-import { fetchRentEstimate } from '@/lib/fetchRentEstimate';
+// import CityPopupCard from '@/components/CityPopupCard';
+import { fetchCityCostOfLiving } from '@/lib/fetchRentEstimate';
 import Link from 'next/link';
 import CursorHalo from './CursorHalo';
+import CityCostCard from '@/components/CityCostCard';
 
 const USMap = dynamic(() => import('@/components/USMap'), {
   ssr: false,
@@ -18,30 +19,23 @@ const USMap = dynamic(() => import('@/components/USMap'), {
 
 export default function RentMapPage() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [rentData, setRentData] = useState<{
-    rent: number | null;
-    lastUpdated: string | null;
-  }>({ rent: null, lastUpdated: null });
+  const [cityData, setCityData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const rentCache = useRef<{ [city: string]: { rent: number | null; lastUpdated: string | null } }>({});
+  const rentCache = useRef<{ [key: string]: any }>({});
 
-  const handleCityClick = async (city: string) => {
-    setSelectedCity(city);
-    if (rentCache.current[city]) {
-      setRentData(rentCache.current[city]);
+  const handleCityClick = async (city: { name: string; lat: number; lon: number }) => {
+    setSelectedCity(city.name);
+    if (rentCache.current[city.name]) {
+      setCityData(rentCache.current[city.name]);
       return;
     }
     setIsLoading(true);
     try {
-      const result = await fetchRentEstimate(city);
-      const data = {
-        rent: result?.medianRent || null,
-        lastUpdated: result?.lastUpdated || null,
-      };
-      setRentData(data);
-      rentCache.current[city] = data;
+      const result = await fetchCityCostOfLiving(city.lat, city.lon);
+      setCityData(result);
+      rentCache.current[city.name] = result;
     } catch {
-      setRentData({ rent: null, lastUpdated: null });
+      setCityData(null);
     } finally {
       setIsLoading(false);
     }
@@ -49,7 +43,7 @@ export default function RentMapPage() {
 
   const handleCloseCard = () => {
     setSelectedCity(null);
-    setRentData({ rent: null, lastUpdated: null });
+    setCityData(null);
   };
 
   return (
@@ -60,17 +54,12 @@ export default function RentMapPage() {
       </Link>
       <main className="flex-1 flex flex-col items-center justify-center px-0 pb-0">
         <USMap onCityClick={handleCityClick} recenterButtonClass="fixed bottom-6 right-6 z-50 bg-white/90 text-emerald-700 hover:bg-emerald-50 border border-emerald-400 rounded-full px-5 py-2 shadow-md text-lg font-medium transition-all hover:scale-105 cursor-pointer" />
-        {selectedCity && (
-          <CityPopupCard
-            city={selectedCity}
-            rent={rentData.rent}
-            lastUpdated={rentData.lastUpdated}
-            onClose={handleCloseCard}
-          />
+        {selectedCity && cityData && (
+          <CityCostCard data={cityData} onClose={handleCloseCard} />
         )}
         {isLoading && (
           <div className="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border border-emerald-200 z-50">
-            Loading rent data...
+            Loading cost of living data...
           </div>
         )}
       </main>

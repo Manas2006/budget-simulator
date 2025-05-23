@@ -3,43 +3,61 @@ import axios from 'axios';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const city = searchParams.get('city');
-  console.log('API route called with city:', city);
+  const lat = searchParams.get('lat');
+  const lon = searchParams.get('lon');
 
-  if (!city) {
-    return new Response(JSON.stringify({ error: 'City is required' }), { status: 400 });
+  if (!lat || !lon) {
+    return new Response(JSON.stringify({ error: 'Latitude and longitude are required' }), { status: 400 });
   }
 
-  if (!process.env.RAPIDAPI_ZILLOW_KEY) {
-    console.error('RAPIDAPI_ZILLOW_KEY is missing from environment variables!');
+  if (!process.env.NEXT_PUBLIC_RAPIDAPI_KEY) {
+    console.error('NEXT_PUBLIC_RAPIDAPI_KEY is missing from environment variables!');
     return new Response(JSON.stringify({ error: 'API key missing' }), { status: 500 });
   }
 
+  const encodedParams = new URLSearchParams();
+  encodedParams.set('latitude', lat);
+  encodedParams.set('longitude', lon);
+  encodedParams.set('currencies', '["USD"]');
+  encodedParams.set('radius', '100');
+  encodedParams.set('distance_unit', 'kilometers');
+
+  const options = {
+    method: 'POST',
+    url: 'https://cities-cost-of-living1.p.rapidapi.com/dev/get_cities_details_by_coordinates',
+    headers: {
+      'x-rapidapi-key': process.env.NEXT_PUBLIC_RAPIDAPI_KEY!,
+      'x-rapidapi-host': 'cities-cost-of-living1.p.rapidapi.com',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    data: encodedParams,
+  };
+
   try {
-    const dummyAddress = `${city}`;
-    const options = {
-      method: 'GET',
-      url: 'https://zillow-com1.p.rapidapi.com/rentEstimate',
-      params: {
-        address: dummyAddress,
-        d: '0.5',
-        propertyType: 'SingleFamily'
-      },
-      headers: {
-        'x-rapidapi-key': process.env.RAPIDAPI_ZILLOW_KEY!,
-        'x-rapidapi-host': 'zillow-com1.p.rapidapi.com'
-      }
-    };
-    console.log('Axios request options:', JSON.stringify({ ...options, headers: { ...options.headers, 'x-rapidapi-key': '***' } }, null, 2));
     const response = await axios.request(options);
-    console.log('Zillow API response:', response.data);
-    return new Response(JSON.stringify(response.data), { status: 200 });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error('Zillow API error:', error.message);
-      return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-    }
-    console.error('Zillow API error:', error);
-    return new Response(JSON.stringify({ error: 'Unknown error' }), { status: 500 });
+    const city = response.data.data[0];
+    const usdDetails = city.cost_of_living_details.find((d: any) => d.currency === 'USD')?.details || [];
+    const getItem = (label: string) => usdDetails.find((item: any) => item.Item === label)?.Value ?? 'N/A';
+
+    const result = {
+      city: city.name,
+      country: city.country,
+      costOfLivingIndex: city.cost_of_living_index,
+      rentIndex: city.rent_index,
+      groceriesIndex: city.groceries_index,
+      restaurantIndex: city.restaurant_price_index,
+      purchasingPower: city.local_purchasing_power_index,
+      estMonthlyWithoutRent: getItem('Estimated Monthly Costs Without Rent'),
+      apt1City: getItem('Apartment (1 bedroom) in City Centre'),
+      apt1Suburbs: getItem('Apartment (1 bedroom) Outside of Centre'),
+      apt3City: getItem('Apartment (3 bedrooms) in City Centre'),
+      apt3Suburbs: getItem('Apartment (3 bedrooms) Outside of Centre'),
+      avgSalary: getItem('Average Monthly Net Salary (After Tax)'),
+      internetCost: getItem('Internet (60 Mbps or More, Unlimited Data, Cable/ADSL)'),
+    };
+    return new Response(JSON.stringify(result), { status: 200 });
+  } catch (error) {
+    console.error('❌ Error fetching city cost of living:', error);
+    return new Response(JSON.stringify({ error: 'Failed to fetch cost of living data' }), { status: 500 });
   }
 } 
