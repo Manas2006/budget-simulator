@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
-import { CookieOptions } from '@supabase/ssr';
 
 export const supabaseServer = async () => {
   const cookieStore = await cookies();
@@ -13,10 +12,10 @@ export const supabaseServer = async () => {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options });
+        set(name: string, value: string) {
+          cookieStore.set({ name, value });
         },
-        remove(name: string, options: CookieOptions) {
+        remove(name: string) {
           cookieStore.delete(name);
         },
       },

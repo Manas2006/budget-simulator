@@ -3,7 +3,7 @@ import { supabaseServer } from '@/lib/supabaseServer';
 import CityCard from '@/components/CityCard';
 
 export default async function DashboardPage() {
-  const supabase = supabaseServer();
+  const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

@@ -7,7 +7,6 @@ import { supabase } from '@/lib/supabaseClient';
 import { useUser } from '@/hooks/useUser';
 import { Menu } from 'lucide-react';
 import MobileMenu from './MobileMenu';
-import { User } from '@supabase/supabase-js';
 
 export default function NavBar() {
   const user = useUser();
