@@ -81,10 +81,16 @@ export async function GET(req: NextRequest) {
     // Upload updated cache to Supabase Storage (production only)
     if (process.env.NODE_ENV === 'production') {
       try {
-        await supabase.storage.from(BUCKET).upload(STORAGE_FILE, fs.createReadStream(DATA_PATH), {
+        const fileBuffer = fs.readFileSync(DATA_PATH);
+        const { data, error } = await supabase.storage.from(BUCKET).upload(STORAGE_FILE, fileBuffer, {
           upsert: true,
           contentType: 'application/json',
         });
+        if (error) {
+          console.error('❌ Error uploading cache to Supabase:', error);
+        } else {
+          console.log('Cache uploaded to Supabase!', data);
+        }
       } catch (err) {
         console.error('❌ Error uploading cache to Supabase:', err);
       }
