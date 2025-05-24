@@ -2,8 +2,33 @@ import { NextRequest } from 'next/server';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-const DATA_PATH = path.join(process.cwd(), 'src/data/data.json');
+// Use /tmp for cache in production, src/data/data.json in dev
+const DATA_PATH = process.env.NODE_ENV === 'production'
+  ? '/tmp/data.json'
+  : path.join(process.cwd(), 'src/data/data.json');
+
+// Supabase Storage config
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const BUCKET = 'city-cache';
+const STORAGE_FILE = 'data.json';
+
+// On cold start in production, restore cache from Supabase Storage if missing
+if (process.env.NODE_ENV === 'production' && !fs.existsSync(DATA_PATH)) {
+  (async () => {
+    const { data } = await supabase.storage.from(BUCKET).download(STORAGE_FILE);
+    if (data) {
+      const buffer = Buffer.from(await data.arrayBuffer());
+      fs.writeFileSync(DATA_PATH, buffer);
+    } else {
+      // If file doesn't exist, start with empty cache
+      fs.writeFileSync(DATA_PATH, '{}');
+    }
+  })();
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -52,6 +77,19 @@ export async function GET(req: NextRequest) {
     // Cache the result
     cache[cacheKey] = result;
     fs.writeFileSync(DATA_PATH, JSON.stringify(cache, null, 2), 'utf-8');
+
+    // Upload updated cache to Supabase Storage (production only)
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        await supabase.storage.from(BUCKET).upload(STORAGE_FILE, fs.createReadStream(DATA_PATH), {
+          upsert: true,
+          contentType: 'application/json',
+        });
+      } catch (err) {
+        console.error('❌ Error uploading cache to Supabase:', err);
+      }
+    }
+
     return new Response(JSON.stringify(result), { status: 200 });
   } catch (error) {
     console.error('❌ Error fetching city cost of living:', error);
