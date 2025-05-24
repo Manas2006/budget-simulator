@@ -16,18 +16,9 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const BUCKET = 'city-cache';
 const STORAGE_FILE = 'data.json';
 
-// On cold start in production, restore cache from Supabase Storage if missing
-if (process.env.NODE_ENV === 'production' && !fs.existsSync(DATA_PATH)) {
-  (async () => {
-    const { data } = await supabase.storage.from(BUCKET).download(STORAGE_FILE);
-    if (data) {
-      const buffer = Buffer.from(await data.arrayBuffer());
-      fs.writeFileSync(DATA_PATH, buffer);
-    } else {
-      // If file doesn't exist, start with empty cache
-      fs.writeFileSync(DATA_PATH, '{}');
-    }
-  })();
+// Type guard for error.status === 404
+function isStatus404(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && 'status' in error && (error as { status: number }).status === 404;
 }
 
 export async function GET(req: NextRequest) {
@@ -37,6 +28,22 @@ export async function GET(req: NextRequest) {
 
   if (!city_name || !country_name) {
     return new Response(JSON.stringify({ error: 'city_name and country_name are required' }), { status: 400 });
+  }
+
+  // Restore cache from Supabase if missing (awaited)
+  if (process.env.NODE_ENV === 'production' && !fs.existsSync(DATA_PATH)) {
+    const { data, error } = await supabase.storage.from(BUCKET).download(STORAGE_FILE);
+    if (data) {
+      const buffer = Buffer.from(await data.arrayBuffer());
+      fs.writeFileSync(DATA_PATH, buffer);
+      console.log('✅ Restored cache from Supabase Storage');
+    } else if (isStatus404(error)) {
+      fs.writeFileSync(DATA_PATH, '{}');
+      console.log('ℹ️ No cache found in Supabase Storage, created new empty cache');
+    } else if (error) {
+      console.error('❌ Error downloading cache from Supabase:', error);
+      return new Response(JSON.stringify({ error: 'Failed to restore cache from Supabase' }), { status: 500 });
+    }
   }
 
   // Read or create the cache file
@@ -54,6 +61,7 @@ export async function GET(req: NextRequest) {
     return new Response(JSON.stringify(cache[cacheKey]), { status: 200 });
   }
 
+  // Only check for API key if we need to fetch new data
   if (!process.env.NEXT_PUBLIC_RAPIDAPI_KEY) {
     return new Response(JSON.stringify({ error: 'API key missing' }), { status: 500 });
   }
