@@ -9,20 +9,13 @@ import CursorHalo from './CursorHalo';
 import CityCostCard from '@/components/CityCostCard';
 
 type CityCostOfLivingData = {
-  city: string;
-  country: string;
-  costOfLivingIndex: number;
-  rentIndex: number;
-  groceriesIndex: number;
-  restaurantIndex: number;
-  purchasingPower: number;
-  estMonthlyWithoutRent: string | number;
-  apt1City: string | number;
-  apt1Suburbs: string | number;
-  apt3City: string | number;
-  apt3Suburbs: string | number;
-  avgSalary: string | number;
-  internetCost: string | number;
+  city_name: string;
+  country_name: string;
+  prices: Array<{
+    item_name: string;
+    category_name: string;
+    usd: { avg: string };
+  }>;
 };
 
 const USMap = dynamic(() => import('@/components/USMap'), {
@@ -48,7 +41,11 @@ export default function RentMapPage() {
     }
     setIsLoading(true);
     try {
-      const result = await fetchCityCostOfLiving(city.lat, city.lon);
+      // Parse city and state from city.name (e.g., "Austin, TX")
+      const [cityPart] = city.name.split(',');
+      const city_name = cityPart.trim();
+      const country_name = 'United States';
+      const result = await fetchCityCostOfLiving(city_name, country_name);
       setCityData(result);
       rentCache.current[city.name] = result;
     } catch {
