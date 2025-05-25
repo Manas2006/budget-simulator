@@ -7,6 +7,7 @@ import { fetchCityCostOfLiving } from '@/lib/fetchRentEstimate';
 import Link from 'next/link';
 import CursorHalo from './CursorHalo';
 import CityCostCard from '@/components/CityCostCard';
+import { SavedCitiesProvider } from '@/hooks/SavedCitiesContext';
 
 type CityCostOfLivingData = {
   city_name: string;
@@ -61,22 +62,24 @@ export default function RentMapPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 flex flex-col font-sans">
-      <CursorHalo color="green" />
-      <Link href="/" className="fixed top-6 left-6 z-50 bg-white/90 text-emerald-700 hover:bg-emerald-50 border border-emerald-400 rounded-full px-5 py-2 shadow-md text-lg font-medium transition-all hover:scale-105 cursor-pointer">
-        ← Home
-      </Link>
-      <main className="flex-1 flex flex-col items-center justify-center px-0 pb-0">
-        <USMap onCityClick={handleCityClick} recenterButtonClass="fixed bottom-6 right-6 z-50 bg-white/90 text-emerald-700 hover:bg-emerald-50 border border-emerald-400 rounded-full px-5 py-2 shadow-md text-lg font-medium transition-all hover:scale-105 cursor-pointer" />
-        {selectedCity && cityData && (
-          <CityCostCard data={cityData} onClose={handleCloseCard} />
-        )}
-        {isLoading && (
-          <div className="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border border-emerald-200 z-50">
-            Loading cost of living data...
-          </div>
-        )}
-      </main>
-    </div>
+    <SavedCitiesProvider>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 flex flex-col font-sans">
+        <CursorHalo color="green" />
+        <Link href="/" className="fixed top-6 left-6 z-50 bg-white/90 text-emerald-700 hover:bg-emerald-50 border border-emerald-400 rounded-full px-5 py-2 shadow-md text-lg font-medium transition-all hover:scale-105 cursor-pointer">
+          ← Home
+        </Link>
+        <main className="flex-1 flex flex-col items-center justify-center px-0 pb-0">
+          <USMap onCityClick={handleCityClick} recenterButtonClass="fixed bottom-6 right-6 z-50 bg-white/90 text-emerald-700 hover:bg-emerald-50 border border-emerald-400 rounded-full px-5 py-2 shadow-md text-lg font-medium transition-all hover:scale-105 cursor-pointer" />
+          {selectedCity && cityData && (
+            <CityCostCard data={cityData} onClose={handleCloseCard} />
+          )}
+          {isLoading && (
+            <div className="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border border-emerald-200 z-50">
+              Loading cost of living data...
+            </div>
+          )}
+        </main>
+      </div>
+    </SavedCitiesProvider>
   );
 } 

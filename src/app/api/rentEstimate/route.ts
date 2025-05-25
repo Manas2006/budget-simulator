@@ -9,12 +9,15 @@ const DATA_PATH = process.env.NODE_ENV === 'production'
   ? '/tmp/data.json'
   : path.join(process.cwd(), 'src/data/data.json');
 
-// Supabase Storage config
+// Supabase Storage configow 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const BUCKET = 'city-cache';
 const STORAGE_FILE = 'data.json';
+
+
+
 
 // Type guard for error.status === 404
 function isStatus404(error: unknown): boolean {

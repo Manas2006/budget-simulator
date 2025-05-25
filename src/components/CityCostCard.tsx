@@ -1,4 +1,7 @@
+"use client";
 import React from 'react';
+import { SaveCityButton } from './SaveCityButton';
+import { useSavedCitiesContext } from '@/hooks/SavedCitiesContext';
 
 type PriceItem = {
   item_name: string;
@@ -45,6 +48,8 @@ const CATEGORY_ORDER = [
 ];
 
 export default function CityCostCard({ data, onClose }: CityCostCardProps) {
+  const { savedCities, saveCity } = useSavedCitiesContext();
+  console.log("CityCostCard rendered", data);
   // Group prices by category
   const grouped: Record<string, PriceItem[]> = {};
   data.prices.forEach(item => {
@@ -52,9 +57,34 @@ export default function CityCostCard({ data, onClose }: CityCostCardProps) {
     grouped[item.category_name].push(item);
   });
 
+  // Generate a citySlug for the SaveCityButton
+  const citySlug = `${data.city_name.toLowerCase().replace(/\s+/g, '-')}-${data.country_name.toLowerCase().replace(/\s+/g, '-')}`;
+
+  // Find rent snapshot (first rent price found)
+  const rentItem = data.prices.find(p => p.category_name === 'Rent Per Month');
+  const rent_snapshot = rentItem ? parseFloat(rentItem.usd.avg) : 0;
+
+  // Check if city is already saved
+  const isSaved = savedCities.some(city => city.city_slug === citySlug);
+
+  const handleSave = async () => {
+    await saveCity({
+      city_name: data.city_name,
+      country_name: data.country_name,
+      lat: 0, // TODO: get real lat
+      lon: 0, // TODO: get real lon
+      rent_snapshot,
+      snapshot: data.prices as unknown,
+    });
+  };
+
   return (
     <div className="fixed right-0 top-0 h-full w-full max-w-md bg-gradient-to-br from-emerald-100/80 to-lime-100/80 backdrop-blur-md shadow-2xl border-l border-emerald-200 z-50 flex flex-col text-black">
       <div className="relative p-6 flex-1 overflow-y-auto">
+        <SaveCityButton
+          saved={isSaved}
+          onSave={handleSave}
+        />
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"

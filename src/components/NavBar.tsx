@@ -13,6 +13,11 @@ export default function NavBar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +34,8 @@ export default function NavBar() {
         ? 'text-emerald-600'
         : 'text-gray-800 hover:text-emerald-600 dark:text-gray-200 dark:hover:text-emerald-400'
     }`;
+
+  if (!hasMounted) return null;
 
   return (
     <>
