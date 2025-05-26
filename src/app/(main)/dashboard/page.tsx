@@ -3,6 +3,7 @@
 import { SavedCitiesProvider, useSavedCitiesContext } from '@/hooks/SavedCitiesContext';
 import CityCard from '@/components/CityCard';
 import { useUser } from '@/hooks/useUser';
+import DashboardStats from '@/components/DashboardStats';
 
 function DashboardContent() {
   const { savedCities, loading } = useSavedCitiesContext();
@@ -36,6 +37,7 @@ function DashboardContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-lime-50 p-8">
       <div className="max-w-7xl mx-auto">
+        <DashboardStats savedCities={savedCities} />
         <h1 className="text-3xl font-bold text-emerald-800 mb-6">Your Cities</h1>
         
         {savedCities.length === 0 ? (
