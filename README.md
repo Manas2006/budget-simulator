@@ -1,140 +1,164 @@
 # Budget Simulator
 
-A modern web application that helps users explore and compare rent costs across different US cities using an interactive map interface. Built with Next.js, React, and Mapbox GL.
+Explore and compare rent costs across US cities with a beautiful, interactive map and personalized dashboard.  
+**Live Demo:** [https://budget-simulator-mp123.vercel.app/](https://budget-simulator-mp123.vercel.app/)
 
-## Features
+---
 
-- Interactive US map with city selection
-- Real-time rent estimates using Zillow API
-- Beautiful, responsive UI with smooth animations
-- City-specific rent information cards
-- Caching system for rent data to improve performance
-- Modern gradient-based design with smooth transitions
-- User authentication with Google OAuth
-- Save and manage favorite cities
-- **Redesigned navigation bar:**
-  - Glassmorphism style, sticky, and responsive
-  - Navigation links and app name grouped and left-aligned
-  - Auth buttons right-aligned
-  - NavBar is hidden on `/rent-map` for a fullscreen map experience
+## 🚀 Features
 
-## Tech Stack
+- **Interactive US Map:** Click any city to view detailed cost-of-living data.
+- **Real-Time Rent Estimates:** Powered by the RapidAPI "Cost of Living and Prices" API.
+- **User Authentication:** Sign in with Google (Supabase Auth).
+- **Save & Manage Cities:** Add cities to your dashboard, compare, and remove them instantly.
+- **Dashboard Summary:** See total cities, average rent, most/least expensive city, and last saved.
+- **Optimistic UI:** Instant feedback when adding/removing cities—no refresh needed.
+- **Persistent State:** Saved cities and stats sync across devices and sessions.
+- **Modern UI:** Responsive, glassmorphism navigation, smooth transitions, and beautiful cards.
 
-- **Frontend Framework**: Next.js 15.3.2
-- **UI Library**: React 19
-- **Styling**: Tailwind CSS
-- **Maps**: Mapbox GL & react-map-gl
-- **Animations**: Framer Motion
-- **API Integration**: Axios
-- **Language**: TypeScript
-- **Database & Auth**: Supabase (PostgreSQL)
+---
 
-## Getting Started
+## 🖼️ Screenshots
 
-### Prerequisites
+### Home Page
+![Home Page](public/homePage.png)
 
-- Node.js (Latest LTS version recommended)
-- npm or yarn
-- A Mapbox access token
-- A RapidAPI Zillow API key
-- A Supabase project
+### Interactive Rent Map
+![Map Page](public/mapPage.png)
 
-### Installation
+### Dashboard & Stats
+![Dashboard](public/dashboard.png)
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/budget-simulator.git
-cd budget-simulator
-```
+---
 
-2. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-```
-
-3. Create a `.env.local` file in the root directory and add your API keys:
-```
-NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
-RAPIDAPI_ZILLOW_KEY=your_zillow_api_key
-NEXT_PUBLIC_SUPABASE_URL=your_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-```
-
-4. Start the development server:
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-The application will be available at `http://localhost:3000`.
-
-## Project Structure
+## 🧩 Main Components & Structure
 
 ```
 src/
-├── app/                 # Next.js app directory
-│   ├── api/            # API routes
-│   ├── rent-map/       # Rent map page
-│   ├── dashboard/      # User dashboard
-│   └── layout.tsx      # Root layout
-├── components/         # React components
-│   ├── USMap.tsx      # Interactive US map
-│   ├── CityCard.tsx   # City information card
-│   ├── NavBar.tsx     # Navigation bar (redesigned, grouped left)
-│   └── NavBarWrapper.tsx # Client component for conditional NavBar rendering
-├── lib/               # Utility functions
-│   ├── supabaseClient.ts
-│   └── supabaseServer.ts
-└── data/             # Static data
+├── app/
+│   ├── (main)/dashboard/      # User dashboard (with summary stats)
+│   ├── (main)/rent-map/       # Interactive rent map page
+│   ├── api/                   # API routes (rentEstimate, etc.)
+│   └── layout.tsx             # App layout
+├── components/
+│   ├── DashboardStats.tsx     # Dashboard summary statistics
+│   ├── CityCard.tsx           # Saved city card (with remove)
+│   ├── CityCostCard.tsx       # City cost-of-living modal/card
+│   ├── SaveCityButton.tsx     # Add/save city button
+│   ├── USMap.tsx              # Interactive US map
+│   ├── NavBar.tsx             # Glassmorphism navigation bar
+│   └── NavBarWrapper.tsx      # Conditional NavBar rendering
+├── hooks/
+│   ├── useSavedCities.ts      # Saved cities state & optimistic updates
+│   ├── SavedCitiesContext.tsx # Shared context for saved cities
+│   └── useUser.ts             # Supabase user/auth hook
+├── lib/
+│   ├── supabaseClient.ts      # Supabase client (browser)
+│   └── supabaseServer.ts      # Supabase client (server)
+├── data/
+│   └── usCities.json          # Static city data for dev
+└── public/
+    ├── dashboard.png
+    ├── homePage.png
+    └── mapPage.png
 ```
 
-### NavBar & Layout Notes
-- The navigation bar uses a glassmorphism style and is sticky at the top.
-- The app name and navigation links are grouped and left-aligned for a clean look.
-- Auth buttons are right-aligned.
-- The NavBar is **not shown on `/rent-map`** to allow a fullscreen map view.
-- Conditional rendering is handled by a client component: `components/NavBarWrapper.tsx`.
+---
 
-## Enable Google Auth in Supabase
+## 🛠️ Getting Started
 
-1. Go to your Supabase project dashboard
-2. Navigate to Authentication → Providers
-3. Enable Google provider
-4. In Google Cloud Console:
-   - Create a new project or select existing one
-   - Go to APIs & Services → Credentials
-   - Create OAuth 2.0 Client ID (Web application)
-   - Add authorized redirect URIs:
-     ```
-     https://<project-ref>.supabase.co/auth/v1/callback
-     http://localhost:3000/auth/v1/callback
-     ```
-5. Copy the Client ID and Client Secret
-6. Paste them back into Supabase Google provider settings
-7. Save changes
+### Prerequisites
 
-## API Integration
+- Node.js (LTS recommended)
+- pnpm, npm, or yarn
+- Mapbox access token
+- RapidAPI Cost of Living API key
+- Supabase project (with Google Auth enabled)
 
-The application uses the Zillow API through RapidAPI to fetch real-time rent estimates for different cities. The API endpoint is configured to handle city-specific queries and return median rent data.
+### Installation
 
-## Contributing
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/budget-simulator.git
+   cd budget-simulator
+   ```
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. **Install dependencies:**
+   ```bash
+   pnpm install
+   # or
+   npm install
+   # or
+   yarn install
+   ```
 
-## License
+3. **Set up environment variables:**
+   Create a `.env.local` file:
+   ```
+   NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
+   NEXT_PUBLIC_RAPIDAPI_KEY=your_rapidapi_key
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+4. **Start the development server:**
+   ```bash
+   pnpm dev
+   # or
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-## Acknowledgments
+   Visit [http://localhost:3000](http://localhost:3000)
 
-- Mapbox for the mapping functionality
-- Zillow for the rent data API
-- Supabase for database and authentication
-- Next.js team for the amazing framework
+---
+
+## 🏗️ Key Features Explained
+
+- **DashboardStats:**  
+  At the top of your dashboard, see a summary of your saved cities: total, average rent, most/least expensive, rent range, and last saved.
+
+- **Optimistic UI:**  
+  When you add or remove a city, the UI updates instantly—no waiting for a server round-trip.
+
+- **Shared State:**  
+  All city add/remove actions are synced across the rent map and dashboard using a React context provider.
+
+- **Supabase Integration:**  
+  - Auth: Google sign-in/out
+  - Database: Each user's saved cities are stored in a Postgres table with RLS for security.
+
+- **API Caching:**  
+  City cost-of-living data is cached locally (dev) or in Supabase Storage (prod) for fast, low-cost lookups.
+
+---
+
+## 🌐 Live Demo
+
+Try it now:  
+👉 [https://budget-simulator-mp123.vercel.app/](https://budget-simulator-mp123.vercel.app/)
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes
+4. Push and open a Pull Request
+
+---
+
+## 📄 License
+
+MIT
+
+---
+
+## 🙏 Acknowledgments
+
+- [Mapbox](https://www.mapbox.com/)
+- [Supabase](https://supabase.com/)
+- [RapidAPI Cost of Living](https://rapidapi.com/)
+- [Next.js](https://nextjs.org/)
